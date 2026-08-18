@@ -1,5 +1,6 @@
 import json
 import os
+import csv
 
 # 数据文件路径
 DATA_FILE = "data.json"
@@ -133,6 +134,32 @@ def show_report():
         print(f"    {i}. {cat:6s}: ¥{amt:8.2f} ({pct:5.1f}%)")
     print("=" * 40)
 
+
+def export_csv():
+    """导出记录到 CSV 文件"""
+    if not records:
+        print("暂无记录可导出")
+        return
+
+    filename = input("文件名（默认 export.csv）: ").strip() or "export.csv"
+    if not filename.endswith(".csv"):
+        filename += ".csv"
+
+    with open(filename, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.writer(f)
+        # 写入表头
+        writer.writerow(["类型", "金额", "分类", "日期", "备注"])
+        # 写入每条记录
+        for r in records:
+            writer.writerow([
+                r["type"],
+                r["amount"],
+                r["category"],
+                r["date"],
+                r["note"]
+            ])
+
+    print(f"✅ 已导出 {len(records)} 条记录到 {filename}")
 def main():
     """程序入口"""
     load_data()
@@ -141,7 +168,8 @@ def main():
         print("\n========== 记账本 ==========")
         print("1. 记一笔")
         print("2. 查看记录")
-        print("3. 收支报表")  # 新增
+        print("3. 收支报表")
+        print("4. 导出 CSV")  # 新增
         print("0. 退出")
         print("============================")
 
@@ -151,8 +179,10 @@ def main():
             add_record()
         elif choice == "2":
             show_records()
-        elif choice == "3":  # 新增
-            show_report()  # 新增
+        elif choice == "3":
+            show_report()
+        elif choice == "4":  # 新增
+            export_csv()  # 新增
         elif choice == "0":
             save_data()
             print("再见！")
