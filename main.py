@@ -46,8 +46,13 @@ def add_record():
         except ValueError:
             print("请输入数字")
 
-    # 输入分类
-    category = input("分类（如餐饮/交通）: ").strip() or "其他"
+    # 根据类型显示不同的分类选项
+    if t_type == "收入":
+        print("收入分类: 工资 / 奖金 / 兼职 / 投资 / 其他")
+        category = input("分类: ").strip() or "其他"
+    else:
+        print("支出分类: 餐饮 / 交通 / 学习 / 娱乐 / 购物 / 医疗 / 其他")
+        category = input("分类: ").strip() or "其他"
 
     # 输入日期
     date = input("日期（如2026-08-16）: ").strip()
@@ -69,17 +74,28 @@ def add_record():
     records.append(record)
     print("✅ 记录成功！")
 
-
 def show_records():
-    """查看所有记录"""
-    print("\n--- 所有记录 ---")
-    if not records:
+    """查看记录，支持按月份筛选"""
+    print("\n--- 查看记录 ---")
+
+    # 新增：询问是否筛选月份
+    month = input("输入月份筛选（如 2026-08，直接回车查全部）: ").strip()
+
+    # 筛选逻辑
+    results = records
+    if month:
+        results = [r for r in records if r["date"].startswith(month)]
+
+    if not results:
         print("暂无记录")
         return
 
-    for i, r in enumerate(records, 1):
+    print(f"\n共 {len(results)} 条记录：")
+    print("-" * 60)
+    for i, r in enumerate(results, 1):
         symbol = "+" if r["type"] == "收入" else "-"
         print(f"{i}. [{r['date']}] {symbol}¥{r['amount']:.2f} | {r['category']} | {r['note']}")
+    print("-" * 60)
 
 
 def main():
