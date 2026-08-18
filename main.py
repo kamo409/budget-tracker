@@ -98,6 +98,41 @@ def show_records():
     print("-" * 60)
 
 
+def show_report():
+    """收支报表"""
+    print("\n--- 收支报表 ---")
+
+    if not records:
+        print("暂无记录")
+        return
+
+    # 计算总收入和总支出
+    income = sum(r["amount"] for r in records if r["type"] == "收入")
+    expense = sum(r["amount"] for r in records if r["type"] == "支出")
+    balance = income - expense
+
+    # 支出分类统计
+    expense_by_category = {}
+    for r in records:
+        if r["type"] == "支出":
+            cat = r["category"]
+            expense_by_category[cat] = expense_by_category.get(cat, 0) + r["amount"]
+
+    # 排序：花钱最多的排前面
+    sorted_categories = sorted(expense_by_category.items(), key=lambda x: x[1], reverse=True)
+
+    # 打印报表
+    print("=" * 40)
+    print(f"  总收入: +¥{income:.2f}")
+    print(f"  总支出: -¥{expense:.2f}")
+    print(f"  结  余: {'+' if balance >= 0 else ''}¥{balance:.2f}")
+    print("-" * 40)
+    print("  支出分类排行:")
+    for i, (cat, amt) in enumerate(sorted_categories[:3], 1):
+        pct = amt / expense * 100 if expense else 0
+        print(f"    {i}. {cat:6s}: ¥{amt:8.2f} ({pct:5.1f}%)")
+    print("=" * 40)
+
 def main():
     """程序入口"""
     load_data()
@@ -106,6 +141,7 @@ def main():
         print("\n========== 记账本 ==========")
         print("1. 记一笔")
         print("2. 查看记录")
+        print("3. 收支报表")  # 新增
         print("0. 退出")
         print("============================")
 
@@ -115,12 +151,12 @@ def main():
             add_record()
         elif choice == "2":
             show_records()
+        elif choice == "3":  # 新增
+            show_report()  # 新增
         elif choice == "0":
             save_data()
             print("再见！")
             break
-        else:
-            print("无效选择")
 
 
 # 程序从这里开始运行
