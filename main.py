@@ -160,6 +160,32 @@ def export_csv():
             ])
 
     print(f"✅ 已导出 {len(records)} 条记录到 {filename}")
+
+
+def delete_record():
+    """删除记录"""
+    if not records:
+        print("暂无记录可删除")
+        return
+
+    show_records()  # 直接调用显示函数，让用户看到编号
+
+    try:
+        num = int(input("\n要删除第几条（输入编号，0取消）: "))
+        if num == 0:
+            print("已取消")
+            return
+        if num < 1 or num > len(records):
+            print("编号不存在")
+            return
+    except ValueError:
+        print("请输入数字")
+        return
+
+    deleted = records.pop(num - 1)
+    save_data()
+    print(f"✅ 已删除: {deleted['type']} ¥{deleted['amount']:.2f}")
+
 def main():
     """程序入口"""
     load_data()
@@ -169,7 +195,8 @@ def main():
         print("1. 记一笔")
         print("2. 查看记录")
         print("3. 收支报表")
-        print("4. 导出 CSV")  # 新增
+        print("4. 导出 CSV")
+        print("5. 删除记录")  # 新增
         print("0. 退出")
         print("============================")
 
@@ -181,13 +208,14 @@ def main():
             show_records()
         elif choice == "3":
             show_report()
-        elif choice == "4":  # 新增
-            export_csv()  # 新增
+        elif choice == "4":
+            export_csv()
+        elif choice == "5":  # 新增
+            delete_record()  # 新增
         elif choice == "0":
             save_data()
             print("再见！")
             break
-
 
 # 程序从这里开始运行
 if __name__ == "__main__":
