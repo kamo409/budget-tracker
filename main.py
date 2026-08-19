@@ -186,6 +186,61 @@ def delete_record():
     save_data()
     print(f"✅ 已删除: {deleted['type']} ¥{deleted['amount']:.2f}")
 
+
+def edit_record():
+    """修改记录"""
+    if not records:
+        print("暂无记录可修改")
+        return
+
+    show_records()  # 显示编号列表
+
+    try:
+        num = int(input("\n要修改第几条（输入编号，0取消）: "))
+        if num == 0:
+            print("已取消")
+            return
+        if num < 1 or num > len(records):
+            print("编号不存在")
+            return
+    except ValueError:
+        print("请输入数字")
+        return
+
+    # 获取要修改的记录
+    record = records[num - 1]
+
+    print(
+        f"\n当前记录: {record['type']} ¥{record['amount']:.2f} | {record['category']} | {record['date']} | {record['note']}")
+    print("直接回车表示不修改该项")
+
+    # 逐项修改
+    new_type = input(f"类型（当前: {record['type']}）: ").strip()
+    if new_type in ["收入", "支出"]:
+        record["type"] = new_type
+
+    new_amount = input(f"金额（当前: {record['amount']}）: ").strip()
+    if new_amount:
+        try:
+            record["amount"] = float(new_amount)
+        except ValueError:
+            print("金额无效，保持原值")
+
+    new_category = input(f"分类（当前: {record['category']}）: ").strip()
+    if new_category:
+        record["category"] = new_category
+
+    new_date = input(f"日期（当前: {record['date']}）: ").strip()
+    if new_date:
+        record["date"] = new_date
+
+    new_note = input(f"备注（当前: {record['note']}）: ").strip()
+    if new_note:
+        record["note"] = new_note
+
+    save_data()
+    print("✅ 修改成功！")
+
 def main():
     """程序入口"""
     load_data()
@@ -196,7 +251,8 @@ def main():
         print("2. 查看记录")
         print("3. 收支报表")
         print("4. 导出 CSV")
-        print("5. 删除记录")  # 新增
+        print("5. 删除记录")
+        print("6. 修改记录")  # 新增
         print("0. 退出")
         print("============================")
 
@@ -210,8 +266,10 @@ def main():
             show_report()
         elif choice == "4":
             export_csv()
-        elif choice == "5":  # 新增
-            delete_record()  # 新增
+        elif choice == "5":
+            delete_record()
+        elif choice == "6":  # 新增
+            edit_record()  # 新增
         elif choice == "0":
             save_data()
             print("再见！")
